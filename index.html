@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>PLAYLAB™ — a digital playground</title>
+  <meta name="description" content="An experimental interactive playground: chaotic mini-games, camera magic, shader visuals, and secrets. Not a portfolio." />
+  <meta name="theme-color" content="#050505" />
+  <meta name="color-scheme" content="dark" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- ══════════════ FAKE BOOT SEQUENCE ══════════════ -->
+  <div id="boot" role="dialog" aria-label="Loading">
+    <pre id="bootLog"></pre>
+    <div class="boot__barwrap"><div id="bootBar"></div></div>
+    <button id="bootSkip" type="button">[ skip — coward mode ]</button>
+  </div>
+
+  <!-- ══════════════ CHROME ══════════════ -->
+  <header class="bar">
+    <button class="logo" id="logo" type="button" aria-label="PLAYLAB home">
+      <span class="logo__glyph">◓</span> PLAYLAB<span class="logo__tm">™</span>
+    </button>
+    <nav class="bar__nav" aria-label="Zones">
+      <a class="chip chip--arcade" href="#dino">DINO.EXE</a>
+      <a class="chip chip--noir" href="#floor">THE FLOOR IS A LIE</a>
+      <a class="chip chip--glitch" href="#survivor">SURVIVOR</a>
+      <a class="chip chip--mirror" href="#mirror">MIRROR.SYS</a>
+    </nav>
+    <button id="auraPill" type="button" title="your aura — earned, not clicked">AURA <b>1,000</b></button>
+    <button id="soundToggle" type="button" aria-pressed="true" title="Toggle sound">SND: ON</button>
+  </header>
+
+  <!-- ══════════════ HERO ══════════════ -->
+  <section id="hero" aria-label="Intro">
+    <canvas id="shaderBg" aria-hidden="true"></canvas>
+    <div class="hero__inner">
+      <p class="hero__eyebrow">est. 2026 · an interactive misuse of the internet</p>
+      <h1 class="hero__title" aria-label="PLAYLAB">
+        <span class="hero__letter">P</span><span class="hero__letter">L</span><span class="hero__letter">A</span><span class="hero__letter">Y</span><span class="hero__letter">L</span><span class="hero__letter">A</span><span class="hero__letter">B</span>
+      </h1>
+      <p class="hero__sub">Three games. One camera. Several lies.<br /><em>Everything here is a toy — including the layout.</em></p>
+      <a class="hero__cta" href="#dino">ENTER THE PLAYGROUND ↓</a>
+    </div>
+    <div class="hero__hint">psst — try the Konami code</div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker__track" id="tickerTrack">
+    <span>DO NOT TRUST THE COINS ✦ THE FLOOR IS LYING ✦ YOUR CURSOR IS THE HERO ✦ THE MIRROR SEES YOU ✦ PRESS BUTTONS YOU SHOULDN'T ✦&nbsp;</span>
+  </div></div>
+
+  <!-- ══════════════ ZONE 01 — DINO.EXE (arcade) ══════════════ -->
+  <section class="zone zone--arcade" id="dino" aria-label="Dino game">
+    <span class="sticker" style="--r:-8deg; top:26px; left:4%;">INSERT AURA</span>
+    <span class="sticker" style="--r:5deg; top:60px; right:5%;">NO REFUNDS</span>
+    <header class="zone__head">
+      <p class="zone__tag">ZONE 01 — VELOCITY DEPARTMENT</p>
+      <h2 class="zone__title arcade-font">DINO<span class="blink">.</span>EXE</h2>
+      <p class="zone__desc">The extinction simulator. Jump: <kbd>space</kbd>/<kbd>↑</kbd>/tap · Duck: <kbd>↓</kbd>. Some signs lie. Some coins bite.</p>
+    </header>
+
+    <div class="dino__stage">
+      <div class="dino__hud">
+        <span class="arcade-font">SCORE <b id="dinoScore">0</b></span>
+        <span class="arcade-font">BEST <b id="dinoBest">0</b></span>
+      </div>
+      <canvas id="dinoCanvas" width="900" height="300"></canvas>
+      <div class="dino__overlay" id="dinoOverlay">
+        <p class="arcade-font" id="dinoMsg">INSERT CONFIDENCE</p>
+        <button class="btn-arcade" id="dinoStart" type="button">START RUN</button>
+      </div>
+      <div class="dino__banner" id="dinoBanner" aria-live="polite"></div>
+    </div>
+
+    <div class="fitting" aria-label="Dino outfit">
+      <p class="fitting__label">FITTING ROOM — drip is permanent (localStorage)</p>
+      <div class="fitting__rows">
+        <div class="fitting__row" data-fit-group="skin">
+          <span>SKIN</span>
+          <button data-fit="mint" type="button" class="on">MINT</button>
+          <button data-fit="magma" type="button">MAGMA</button>
+          <button data-fit="banana" type="button">BANANA</button>
+          <button data-fit="holo" type="button">HOLO</button>
+          <button data-fit="void" type="button">VOID</button>
+        </div>
+        <div class="fitting__row" data-fit-group="hat">
+          <span>HAT</span>
+          <button data-fit="none" type="button" class="on">NONE</button>
+          <button data-fit="cap" type="button">CAP</button>
+          <button data-fit="crown" type="button">CROWN</button>
+          <button data-fit="halo" type="button">HALO</button>
+          <button data-fit="tophat" type="button">TOP HAT</button>
+        </div>
+        <div class="fitting__row" data-fit-group="face">
+          <span>FACE</span>
+          <button data-fit="none" type="button" class="on">NONE</button>
+          <button data-fit="shades" type="button">SHADES</button>
+          <button data-fit="laser" type="button">LASER EYES</button>
+        </div>
+        <div class="fitting__row" data-fit-group="bling">
+          <span>BLING</span>
+          <button data-fit="none" type="button" class="on">NONE</button>
+          <button data-fit="chain" type="button">CHAIN</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ ZONE 02 — THE FLOOR IS A LIE (noir) ══════════════ -->
+  <section class="zone zone--noir" id="floor" aria-label="Glass bridge game">
+    <span class="sticker" style="--r:6deg; top:30px; right:6%;">TRUST NOBODY</span>
+    <header class="zone__head">
+      <p class="zone__tag">ZONE 02 — DEPARTMENT OF TRUST</p>
+      <h2 class="zone__title serif-font"><em>The floor</em> is a lie.</h2>
+      <p class="zone__desc">Eight rows of glass. One safe tile per row. The labels were written by the traps. Climb.</p>
+    </header>
+
+    <div class="floor__stage">
+      <div class="floor__meta">
+        <span>DEATHS: <b id="floorDeaths">0</b></span>
+        <span id="floorMsg">Start at the bottom. Trust nothing.</span>
+        <button id="floorRestart" type="button">NEW BRIDGE</button>
+      </div>
+      <div id="floorGrid" role="grid" aria-label="Glass bridge"></div>
+      <canvas id="floorFx" aria-hidden="true"></canvas>
+    </div>
+  </section>
+
+  <!-- ══════════════ ZONE 03 — CURSOR SURVIVOR (glitch) ══════════════ -->
+  <section class="zone zone--glitch" id="survivor" aria-label="Cursor survival game">
+    <span class="sticker" style="--r:-5deg; top:28px; left:5%;">SHAPES HATE HIM</span>
+    <div class="scanlines" aria-hidden="true"></div>
+    <header class="zone__head">
+      <p class="zone__tag">ZONE 03 — GEOMETRY GRUDGE MATCH</p>
+      <h2 class="zone__title mono-font">CURSOR_SURVIVOR</h2>
+      <p class="zone__desc">Your cursor vs. every shape that ever hated you. Stars are power-ups. Some stars are bait. Learn the difference.</p>
+    </header>
+
+    <div class="surv__stage">
+      <div class="surv__hud mono-font">
+        <span>T+<b id="survTime">0.0</b>s</span>
+        <span>BEST <b id="survBest">0.0</b>s</span>
+      </div>
+      <canvas id="survCanvas"></canvas>
+      <div class="surv__overlay" id="survOverlay">
+        <p class="mono-font" id="survMsg">the shapes are waiting.</p>
+        <button class="btn-glitch" id="survStart" type="button">DEPLOY CURSOR</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker ticker--rev" aria-hidden="true"><div class="ticker__track">
+    <span>AURA IS NOT FINANCIAL ADVICE ✦ THE SHAPES ARE UNIONIZING ✦ 0 DAYS SINCE LAST L ✦ SKILL ISSUES DETECTED NEARBY ✦ CHAT IS ALWAYS WATCHING ✦&nbsp;</span>
+  </div></div>
+
+  <!-- ══════════════ ZONE 04 — MIRROR.SYS (camera) ══════════════ -->
+  <section class="zone zone--mirror" id="mirror" aria-label="Camera mirror">
+    <span class="sticker" style="--r:7deg; top:32px; right:7%;">YOU LOOK GREAT</span>
+    <header class="zone__head">
+      <p class="zone__tag">ZONE 04 — REFLECTION ENGINE</p>
+      <h2 class="zone__title serif-font">MIRROR<em>.SYS</em></h2>
+      <p class="zone__desc">Lend the machine your face. Wave to feed the particles. Everything stays in your browser — the mirror keeps no memories.</p>
+    </header>
+
+    <div class="mirror__stage">
+      <video id="mirrorVideo" autoplay playsinline muted></video>
+      <canvas id="mirrorCanvas" width="640" height="480"></canvas>
+      <canvas id="mirrorFxCanvas" width="640" height="480" aria-hidden="true"></canvas>
+      <div class="mirror__overlay" id="mirrorOverlay">
+        <p id="mirrorMsg">The mirror requires your reflection.</p>
+        <button class="btn-soft" id="mirrorStart" type="button">WAKE THE MIRROR</button>
+      </div>
+      <div class="mirror__controls">
+        <button id="mirrorFx" type="button" disabled>FX: THERMAL</button>
+        <div class="mirror__meter" title="Motion energy"><div id="mirrorMeterBar"></div></div>
+        <button id="mirrorStop" type="button" disabled>SLEEP</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ VAULT / FOOTER ══════════════ -->
+  <section class="zone zone--vault" id="vault" aria-label="Credits">
+    <h2 class="vault__title">You reached the bottom.<br /><em class="serif-font">There is no bottom.</em></h2>
+    <div class="vault__row">
+      <div class="vault__secrets">
+        <p>SECRETS LEDGER</p>
+        <ul>
+          <li>↑↑↓↓←→←→BA — god mode</li>
+          <li>type “dino” anywhere</li>
+          <li>the logo spins if you annoy it (×5)</li>
+          <li id="eggCount">eggs found: 0/4</li>
+        </ul>
+      </div>
+      <button id="doNotPress" type="button">DO NOT PRESS</button>
+    </div>
+    <footer class="vault__foot">
+      <span>PLAYLAB™ · built with canvas, WebGL &amp; bad intentions</span>
+      <span>no frameworks were harmed · <span id="year"></span></span>
+    </footer>
+  </section>
+
+  <!-- ══════════════ GLOBAL OVERLAYS ══════════════ -->
+  <div id="bsod" hidden>
+    <pre>:(  PLAYFUL_SCREEN_OF_DEATH
+
+A problem has been detected: YOU PRESSED IT.
+ERROR: CURIOSITY_NOT_CONTAINED (0x000000FUN)
+
+* Nothing is actually wrong.
+* Your files are fine. Your pride is not.
+
+Rebooting playground in 3 seconds…</pre>
+  </div>
+  <div id="toast" aria-live="polite"></div>
+  <div id="chatFeed" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <script src="./js/sound.js"></script>
+  <script src="./js/roast.js"></script>
+  <script src="./js/cursor.js"></script>
+  <script src="./js/boot.js"></script>
+  <script src="./js/shader-bg.js"></script>
+  <script src="./js/dino.js"></script>
+  <script src="./js/floor.js"></script>
+  <script src="./js/survivor.js"></script>
+  <script src="./js/camera.js"></script>
+  <script src="./js/eggs.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>
