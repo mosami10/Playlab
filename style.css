@@ -173,6 +173,25 @@ em { font-family: var(--font-serif); font-style: italic; }
 @keyframes skullFall {
   to { top: 102%; transform: rotate(200deg); opacity: 0.15; }
 }
+.riser {
+  position: absolute; bottom: -30px; z-index: 45;
+  pointer-events: none;
+  animation: riserUp 1.9s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+}
+@keyframes riserUp {
+  to { bottom: 104%; transform: rotate(-160deg) scale(1.2); opacity: 0; }
+}
+
+/* hero letters are clickable — they yeet */
+.hero__letter { cursor: none; }
+.hero__letter.yeeted {
+  animation: yeet 1.5s cubic-bezier(0.3, -0.3, 0.6, 1) forwards;
+  pointer-events: none;
+}
+@keyframes yeet {
+  30%  { transform: translate(var(--yx, 200px), -220px) rotate(220deg); opacity: 1; }
+  100% { transform: translate(var(--yx, 200px), 130vh) rotate(720deg); opacity: 0; }
+}
 
 body.dmg::before {
   content: ''; position: fixed; inset: 0; z-index: 250; pointer-events: none;
@@ -491,7 +510,245 @@ body.microglitch {
 }
 .btn-glitch:hover { background: var(--acid); color: var(--ink); box-shadow: 4px 4px 0 var(--hot); }
 
-/* ═══════════ ZONE 04 — MIRROR ═══════════ */
+/* ═══════════ ZONE 04 — DOODLE VOID (paper) ═══════════
+   The palate cleanser: white paper, ink lines, hand-drawn everything.
+   Maximum contrast against the dark site = the "wait, what" moment. */
+.zone--doodle {
+  background: #f5f2ea;
+  color: #2a2622;
+}
+.doodle-font { font-family: 'Caveat', cursive; }
+.zone--doodle .zone__tag { color: #6b6459; opacity: 1; }
+.zone--doodle .zone__title {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: clamp(44px, 7.5vw, 100px);
+  transform: rotate(-1.5deg);
+}
+.zone--doodle .zone__desc { color: #55503f; }
+.zone--doodle kbd { border-color: #2a2622; }
+.sticker--ink { color: #2a2622; opacity: 0.7; }
+
+.doodle__stage { position: relative; max-width: 940px; margin: 0 auto; }
+.doodle__hud {
+  display: flex; justify-content: space-between;
+  font-size: 20px; margin-bottom: 8px; color: #55503f;
+}
+.doodle__hud b { color: #2a2622; }
+#doodleCanvas {
+  width: 100%; height: 560px;
+  background: #f5f2ea;
+  border: 2px solid #2a2622;
+  border-radius: 6px;
+  box-shadow: 5px 5px 0 rgba(42,38,34,0.25);
+}
+.doodle__overlay {
+  position: absolute; inset: 36px 0 0 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  background: rgba(245,242,234,0.88);
+  border-radius: 6px;
+  transition: opacity 250ms, visibility 250ms;
+  text-align: center; padding: 0 20px;
+}
+.doodle__overlay.off { opacity: 0; visibility: hidden; pointer-events: none; }
+#doodleMsg { font-size: 26px; line-height: 1.25; color: #2a2622; }
+.btn-ink {
+  font-family: 'Caveat', cursive; font-weight: 700; font-size: 22px;
+  padding: 10px 30px;
+  border: 2px solid #2a2622; border-radius: 999px;
+  color: #2a2622; background: transparent;
+  transform: rotate(-1deg);
+  transition: all 150ms;
+  box-shadow: 3px 3px 0 rgba(42,38,34,0.3);
+}
+.btn-ink:hover { background: #2a2622; color: #f5f2ea; transform: rotate(1deg) translateY(-2px); }
+/* ink-flavored roast text for the paper zone */
+.roast-head--ink { font-family: 'Caveat', cursive !important; color: #2a2622 !important; text-shadow: none !important; font-size: 34px !important; animation: none !important; transform: rotate(-2deg); }
+.roast-line--ink { color: #55503f !important; font-family: 'Caveat', cursive !important; font-size: 20px !important; }
+.roast-score--ink { color: #8a8272 !important; }
+
+.doodle__pad {
+  display: none;
+  position: absolute; right: 14px; bottom: 14px;
+  flex-direction: column; align-items: center; gap: 4px;
+}
+.doodle__pad button {
+  width: 44px; height: 44px;
+  border: 2px solid #2a2622; border-radius: 10px;
+  background: rgba(245,242,234,0.9); color: #2a2622;
+  font-size: 18px; font-weight: 700;
+}
+.doodle__pad > div { display: flex; gap: 4px; }
+@media (pointer: coarse) { .doodle__pad { display: flex; } }
+
+/* ═══════════ ZONE 05 — CLICK ME (haunted OS) ═══════════ */
+.zone--os {
+  background: linear-gradient(180deg, #1a2038, #101425);
+  color: #dfe6ff;
+}
+.zone--os .zone__title { color: #8fb4ff; text-shadow: 3px 3px 0 #0a0d1c; }
+.cm-window {
+  max-width: 560px; margin: 0 auto;
+  background: #d8d4c8;
+  border: 2px solid #0a0d1c;
+  border-radius: 8px;
+  box-shadow: 8px 8px 0 rgba(0,0,0,0.45);
+  color: #1c1a14;
+  overflow: hidden;
+}
+.cm-titlebar {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  background: linear-gradient(90deg, #2b3a8c, #4156c4);
+  color: #fff;
+  padding: 8px 12px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em;
+}
+.cm-meta { display: flex; align-items: center; gap: 8px; font-size: 10px; opacity: 0.9; }
+.cm-x {
+  width: 22px; height: 22px;
+  background: #c0392b; color: #fff; border-radius: 4px;
+  font-size: 11px; font-weight: 700;
+  transition: transform 120ms;
+}
+.cm-x:hover { transform: scale(1.15); }
+.cm-body {
+  min-height: 220px;
+  padding: 26px 22px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  text-align: center;
+}
+.cm-say { font-size: 14px; line-height: 1.55; max-width: 420px; }
+.cm-btn {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  padding: 12px 26px;
+  background: #f4f1e8; border: 2px solid #1c1a14; border-radius: 6px;
+  box-shadow: 3px 3px 0 #1c1a14;
+  transition: transform 100ms, box-shadow 100ms, left 150ms, top 150ms;
+}
+.cm-btn:hover { transform: translateY(-2px); }
+.cm-btn:active { transform: translateY(2px); box-shadow: 1px 1px 0 #1c1a14; }
+.cm-btn.cm-tiny { font-size: 8px; padding: 2px 6px; box-shadow: 1px 1px 0 #1c1a14; }
+.cm-btn.cm-big { font-size: 18px; padding: 20px 44px; background: #c0392b; color: #fff; }
+.cm-row { display: flex; gap: 14px; }
+.cm-check { font-size: 14px; display: flex; gap: 8px; align-items: center; }
+.cm-check input { width: 18px; height: 18px; }
+.cm-slide { width: 260px; }
+.cm-input {
+  font-family: var(--font-mono); font-size: 14px;
+  padding: 10px 14px; border: 2px solid #1c1a14; border-radius: 6px;
+  background: #fff; width: 220px; text-align: center;
+}
+.cm-load { width: 280px; height: 18px; border: 2px solid #1c1a14; position: relative; background: #fff; }
+.cm-load__fill { position: absolute; inset: 0; width: 99%; background: repeating-linear-gradient(90deg, #4156c4 0 12px, #2b3a8c 12px 24px); }
+.cm-load span { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-mono); font-size: 10px; color: #fff; }
+
+/* ═══════════ ZONE 06 — SIMON LIES (hypno) ═══════════ */
+.zone--hypno {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 20%, rgba(159,139,255,0.14), transparent),
+    #14091f;
+  color: #efe8ff;
+}
+.zone--hypno .zone__title em { color: #b79bff; }
+.simon__stage {
+  max-width: 420px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+}
+.simon__hud { font-size: 12px; color: #b79bff; letter-spacing: 0.14em; }
+.simon__board {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  width: min(340px, 80vw); aspect-ratio: 1;
+}
+.simon__pad {
+  border-radius: 18px;
+  border: 2px solid rgba(239,232,255,0.2);
+  opacity: 0.55;
+  transition: opacity 140ms, transform 140ms, box-shadow 140ms;
+}
+.simon__pad--0 { background: #c8ff3e; border-top-left-radius: 90px; }
+.simon__pad--1 { background: #ff3d81; border-top-right-radius: 90px; }
+.simon__pad--2 { background: #41f0ff; border-bottom-left-radius: 90px; }
+.simon__pad--3 { background: #ffd24a; border-bottom-right-radius: 90px; }
+.simon__pad:hover { opacity: 0.75; }
+.simon__pad.lit { opacity: 1; transform: scale(1.05); box-shadow: 0 0 44px currentColor; }
+.simon__pad.lit-dim { opacity: 0.8; transform: scale(1.01); }
+.simon__msg { font-size: 13px; text-align: center; min-height: 40px; color: #cfc2ee; max-width: 360px; line-height: 1.5; }
+.simon__msg b { color: #ff6b6b; }
+
+/* ═══════════ header rage meter ═══════════ */
+#ragePill {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+  color: #fff; border: 1px solid rgba(255,255,255,0.5); border-radius: 999px;
+  padding: 7px 12px; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.rage__track {
+  display: inline-block; width: 44px; height: 5px;
+  background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden;
+}
+#rageBar { display: block; height: 100%; width: 0%; background: #ff4b4b; transition: width 400ms; }
+#ragePill.rage--hot { border-color: #ff4b4b; animation: rageShake 600ms ease-in-out infinite; }
+@keyframes rageShake { 25% { transform: rotate(1.6deg); } 75% { transform: rotate(-1.6deg); } }
+
+/* ═══════════ gaslight overlays ═══════════ */
+#cookieBar {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+  z-index: 320; width: min(560px, calc(100vw - 30px));
+  background: rgba(8,8,8,0.95); border: 1px solid var(--gold); border-radius: 14px;
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px; justify-content: space-between; flex-wrap: wrap;
+}
+#cookieBar[hidden] { display: none; }
+#cookieBar p { font-size: 12px; line-height: 1.5; font-family: var(--font-mono); flex: 1; min-width: 220px; }
+#cookieBar button {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+  border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 8px 14px;
+  transition: all 150ms;
+}
+#cookieBar button:hover { background: var(--gold); color: var(--ink); }
+#cookieBar > div { display: flex; gap: 8px; }
+
+#surveyPop {
+  position: fixed; right: 20px; bottom: 84px; z-index: 320;
+  background: rgba(8,8,8,0.95); border: 1px solid var(--cyan); border-radius: 14px;
+  padding: 18px 22px; text-align: center;
+}
+#surveyPop[hidden] { display: none; }
+#surveyPop p { font-size: 14px; margin-bottom: 12px; font-weight: 600; }
+#surveyPop button {
+  font-family: var(--font-mono); font-size: 11px;
+  border: 1px solid var(--cyan); color: var(--cyan); border-radius: 999px; padding: 8px 18px; margin: 0 4px;
+  transition: all 150ms;
+}
+#surveyPop button:hover { background: var(--cyan); color: var(--ink); }
+
+#meltdown {
+  position: fixed; inset: 0; z-index: 480;
+  background: #ff4b4b;
+  display: grid; place-items: center;
+}
+#meltdown[hidden] { display: none; }
+#meltdown p {
+  font-family: var(--font-arcade);
+  font-size: clamp(40px, 9vw, 110px);
+  color: #fff; letter-spacing: 0.06em;
+  animation: breathe 2.4s ease-in-out infinite;
+}
+@keyframes breathe { 50% { transform: scale(1.12); opacity: 0.85; } }
+
+/* mirror chaos slider + quip */
+.mirror__amt {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 9px; letter-spacing: 0.14em; color: #cfc6ff;
+}
+.mirror__amt input { width: 90px; accent-color: #9f8bff; }
+.mirror__quip {
+  text-align: center; margin-top: 12px;
+  font-style: italic; font-size: 15px; color: #a99ad4; opacity: 0.85;
+  min-height: 22px;
+}
+
+/* ═══════════ ZONE 07 — MIRROR ═══════════ */
 .zone--mirror {
   background: linear-gradient(170deg, #101422, #1c1030 60%, #101422);
   color: #e8ecff;

@@ -3,11 +3,13 @@
    system and re-tints the whole zone. Everything stays on-device. */
 (() => {
   const Sound = () => window.PLAYLAB.Sound;
-  const FX = ['THERMAL', 'ASCII', 'GLITCH', 'MOSAIC'];
+  const FX = ['THERMAL', 'ASCII', 'GLITCH', 'MOSAIC', 'EDGE', 'GHOST'];
   const SW = 160, SH = 120;                     // sample resolution
 
   let video, out, ctx, fxCv, fxCtx, overlay, msgEl, fxBtn, stopBtn, meterBar, section;
   let stream = null, fxIdx = 0, prev = null, hue = 0, parts = [];
+  let amt = 4;                                  // CHAOS slider 1..10 — drives every effect's intensity
+  let quipTimer = 0, motionAvg = 0;
   const sample = document.createElement('canvas');
   sample.width = SW; sample.height = SH;
   const sctx = sample.getContext('2d', { willReadFrequently: true });
@@ -71,7 +73,9 @@
   }
 
   function mosaic(d) {
-    const B = 8;                                 // sample-space block
+    const B = Math.max(2, Math.round(amt * 1.6));   // CHAOS slider = pixelation size
+    ctx.fillStyle = '#0a0716';
+    ctx.fillRect(0, 0, out.width, out.height);
     const bw = out.width / (SW / B), bh = out.height / (SH / B);
     for (let y = 0; y < SH; y += B) {
       for (let x = 0; x < SW; x += B) {
@@ -82,6 +86,38 @@
         ctx.fill();
       }
     }
+  }
+
+  /* EDGE — sobel outline of you, white ink on black */
+  function edge(d) {
+    const thr = 90 - amt * 6;                    // CHAOS slider = edge sensitivity
+    const img = ctx.createImageData(SW, SH);
+    for (let y = 1; y < SH - 1; y++) {
+      for (let x = 1; x < SW - 1; x++) {
+        const i = (y * SW + x);
+        const L = (p) => d[p * 4];
+        const gx = -L(i - SW - 1) + L(i - SW + 1) - 2 * L(i - 1) + 2 * L(i + 1) - L(i + SW - 1) + L(i + SW + 1);
+        const gy = -L(i - SW - 1) - 2 * L(i - SW) - L(i - SW + 1) + L(i + SW - 1) + 2 * L(i + SW) + L(i + SW + 1);
+        const on = Math.abs(gx) + Math.abs(gy) > thr;
+        const o = i * 4;
+        img.data[o] = img.data[o + 1] = img.data[o + 2] = on ? 235 : 6;
+        img.data[o + 3] = 255;
+      }
+    }
+    sctx.putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(sample, 0, 0, out.width, out.height);
+  }
+
+  /* GHOST — motion trails; the mirror remembers where you were */
+  function ghost() {
+    ctx.fillStyle = `rgba(10, 7, 22, ${0.4 - amt * 0.032})`;   // CHAOS = trail length
+    ctx.fillRect(0, 0, out.width, out.height);
+    ctx.globalAlpha = 0.55;
+    ctx.save(); ctx.translate(out.width, 0); ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, out.width, out.height);
+    ctx.restore();
+    ctx.globalAlpha = 1;
   }
 
   function motion(d) {
@@ -96,6 +132,7 @@
     }
     prev.set(d);
     const level = Math.min(100, (hits / (SW * SH / 2)) * 480);
+    motionAvg = motionAvg * 0.95 + level * 0.05;
     meterBar.style.width = level + '%';
 
     if (hits > 40) {
@@ -108,6 +145,20 @@
         parts.push({ x: px, y: py, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 40, c: `hsl(${(hue + Math.random() * 60) | 0} 90% 70%)` });
       }
     }
+  }
+
+  /* the mirror has opinions about your energy level */
+  function quips() {
+    const q = document.getElementById('mirrorQuip');
+    if (!q) return;
+    quipTimer += 1;
+    if (quipTimer % 360 !== 0) return;           // roughly every 6s at 60fps
+    const line = motionAvg < 4
+      ? ['are you… okay? blink twice.', 'a statue would move more.', 'the mirror is bored of you.'][(Math.random() * 3) | 0]
+      : motionAvg > 30
+        ? ['calm down. it\'s a website.', 'save some energy for the games.', 'the particles are scared of you.'][(Math.random() * 3) | 0]
+        : ['you call that a wave?', 'mid movement. mid everything.', 'the mirror has seen better.'][(Math.random() * 3) | 0];
+    q.textContent = '“' + line + '”';
   }
 
   function drawParts() {
@@ -139,10 +190,13 @@
         // glitch draws the raw video, flip via canvas transform
         ctx.save(); ctx.translate(out.width, 0); ctx.scale(-1, 1);
         glitch(); ctx.restore();
-      } else mosaic(d);
+      } else if (fx === 'EDGE') edge(d);
+      else if (fx === 'GHOST') ghost();
+      else mosaic(d);
 
       motion(d);
       drawParts();
+      quips();
     }
     window.PLAYLAB.raf(frame);
   }
@@ -196,6 +250,13 @@
       fxIdx = (fxIdx + 1) % FX.length;
       fxBtn.textContent = 'FX: ' + FX[fxIdx];
       Sound()?.blip(500 + fxIdx * 150);
+    });
+
+    /* CHAOS slider — pixelation size / edge sensitivity / trail length */
+    const amtEl = document.getElementById('mirrorAmt');
+    amtEl?.addEventListener('input', () => {
+      amt = +amtEl.value;
+      Sound()?.blip(300 + amt * 60);
     });
   };
 })();

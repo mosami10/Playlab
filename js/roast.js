@@ -115,6 +115,21 @@ window.PLAYLAB = window.PLAYLAB || { vis: {} };
     }
   }
 
+  /* Star ascension for wins — same energy, opposite direction. */
+  function risers(anchor, n = 10) {
+    if (!anchor) return;
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement('span');
+      s.className = 'riser';
+      s.textContent = pick(['⭐', '✨', '🌟', '📈', '👑']);
+      s.style.left = Math.random() * 92 + '%';
+      s.style.animationDelay = (Math.random() * 0.4) + 's';
+      s.style.fontSize = (14 + Math.random() * 18) + 'px';
+      anchor.appendChild(s);
+      setTimeout(() => s.remove(), 2200);
+    }
+  }
+
   /* Red damage flash on the whole page. */
   function dmgFlash() {
     document.body.classList.add('dmg');
@@ -131,12 +146,15 @@ window.PLAYLAB = window.PLAYLAB || { vis: {} };
     skulls(anchor, tier === 'brutal' ? 11 : 6);
     dmgFlash();
     window.PLAYLAB.Sound?.trap?.();
+    window.dispatchEvent(new CustomEvent('playlab:loss', { detail: { tier } }));
     return { headline, line };
   }
 
   function win({ anchor = null, auraGain = 750 } = {}) {
     addAura(auraGain, anchor);
     chat('win', 4);
+    risers(anchor, 12);
+    window.dispatchEvent(new CustomEvent('playlab:win'));
     return { headline: 'CERTIFIED W', line: pick(ROASTS.win) };
   }
 

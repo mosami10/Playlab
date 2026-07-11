@@ -227,6 +227,18 @@
       ctx.shadowBlur = 22;
       ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, 7); ctx.fill();
       ctx.restore();
+      // first-second onboarding: grace ring + MOVE hint
+      if (elapsed < 1.6) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(200,255,62,0.5)';
+        ctx.setLineDash([4, 6]);
+        ctx.beginPath(); ctx.arc(player.x, player.y, 26 + Math.sin(elapsed * 8) * 4, 0, 7); ctx.stroke();
+        ctx.fillStyle = 'rgba(216,255,232,0.8)';
+        ctx.font = '12px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('MOVE. NOW.', player.x, player.y - 34);
+        ctx.restore();
+      }
     }
   }
 
@@ -253,21 +265,31 @@
     size();
     addEventListener('resize', size, { passive: true });
 
+    /* Input hardening: pointer events (mouse/pen/touch in one), tracked on
+       the whole stage so the orb never "loses" the cursor at the edges.
+       touch-action none stops mobile scroll from eating the moves. */
+    const stage = cv.closest('.surv__stage');
+    cv.style.touchAction = 'none';
     const track = (cx, cy) => {
       const r = cv.getBoundingClientRect();
       mx = Math.max(6, Math.min(W - 6, cx - r.left));
       my = Math.max(6, Math.min(H - 6, cy - r.top));
     };
-    cv.addEventListener('mousemove', (e) => track(e.clientX, e.clientY), { passive: true });
-    cv.addEventListener('touchmove', (e) => { e.preventDefault(); track(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    stage.addEventListener('pointermove', (e) => track(e.clientX, e.clientY), { passive: true });
+    stage.addEventListener('touchmove', (e) => { e.preventDefault(); track(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
 
-    document.getElementById('survStart').addEventListener('click', () => {
-      size(); reset();
+    const begin = () => {
+      size();
+      if (!W || !H) { requestAnimationFrame(begin); return; }   // zone not laid out yet
+      reset();
       state = 'run';
       overlay.classList.add('off');
-      cv.closest('.surv__stage')?.classList.add('live');
+      stage?.classList.add('live');
       Sound()?.blip(700);
-    });
+    };
+    document.getElementById('survStart').addEventListener('click', begin);
+    /* clicking the canvas restarts after death — no need to aim for the button */
+    cv.addEventListener('pointerdown', () => { if (state === 'dead') begin(); });
 
     /* If the tab hides mid-run, shift t0 by the hidden duration so the
        survival clock doesn't count time the player couldn't play. */

@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&family=Silkscreen:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -28,11 +28,15 @@
       <span class="logo__glyph">◓</span> PLAYLAB<span class="logo__tm">™</span>
     </button>
     <nav class="bar__nav" aria-label="Zones">
-      <a class="chip chip--arcade" href="#dino">DINO.EXE</a>
-      <a class="chip chip--noir" href="#floor">THE FLOOR IS A LIE</a>
-      <a class="chip chip--glitch" href="#survivor">SURVIVOR</a>
-      <a class="chip chip--mirror" href="#mirror">MIRROR.SYS</a>
+      <a class="chip" href="#dino">DINO</a>
+      <a class="chip" href="#floor">FLOOR</a>
+      <a class="chip" href="#survivor">CURSOR</a>
+      <a class="chip" href="#doodle">VOID</a>
+      <a class="chip" href="#clickme">CLICK</a>
+      <a class="chip" href="#simon">SIMON</a>
+      <a class="chip" href="#mirror">MIRROR</a>
     </nav>
+    <button id="ragePill" type="button" title="rage meter — fills when you lose">RAGE<span class="rage__track"><span id="rageBar"></span></span></button>
     <button id="auraPill" type="button" title="your aura — earned, not clicked">AURA <b>1,000</b></button>
     <button id="soundToggle" type="button" aria-pressed="true" title="Toggle sound">SND: ON</button>
   </header>
@@ -155,11 +159,93 @@
     </div>
   </section>
 
+  <!-- ══════════════ ZONE 04 — DOODLE VOID (paper) ══════════════ -->
+  <section class="zone zone--doodle" id="doodle" aria-label="Doodle Void game">
+    <span class="sticker sticker--ink" style="--r:-6deg; top:30px; left:5%;">100% HAND-LIED</span>
+    <header class="zone__head">
+      <p class="zone__tag">ZONE 04 — DEPARTMENT OF PENCIL PHYSICS</p>
+      <h2 class="zone__title doodle-font">the DOODLE VOID</h2>
+      <p class="zone__desc">A hand-drawn gauntlet. Hop with <kbd>WASD</kbd>/<kbd>arrows</kbd>. Some tiles are drawings of tiles. The signs lie. The checkpoints lie. The finish flag <em>moves</em>.</p>
+    </header>
+
+    <div class="doodle__stage">
+      <div class="doodle__hud doodle-font">
+        <span>hops: <b id="doodleHops">0</b></span>
+        <span>falls: <b id="doodleFalls">0</b></span>
+      </div>
+      <canvas id="doodleCanvas"></canvas>
+      <div class="doodle__overlay" id="doodleOverlay">
+        <p id="doodleMsg" class="doodle-font">the void awaits. it drew itself.</p>
+        <button class="btn-ink" id="doodleStart" type="button">START HOPPING</button>
+      </div>
+      <div class="doodle__pad" aria-label="Touch controls">
+        <button data-hop="1,0" type="button">↑</button>
+        <div>
+          <button data-hop="0,-1" type="button">←</button>
+          <button data-hop="-1,0" type="button">↓</button>
+          <button data-hop="0,1" type="button">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ ZONE 05 — CLICK ME (haunted OS) ══════════════ -->
+  <section class="zone zone--os" id="clickme" aria-label="Click Me game">
+    <span class="sticker" style="--r:7deg; top:28px; right:6%;">EULA APPLIES</span>
+    <header class="zone__head">
+      <p class="zone__tag">ZONE 05 — CONSENT SIMULATOR</p>
+      <h2 class="zone__title mono-font">CLICK_ME.DLG</h2>
+      <p class="zone__desc">Ten stages. One task: click the button. The button has other plans. Every wasted click is counted and judged.</p>
+    </header>
+
+    <div class="cm-window">
+      <div class="cm-titlebar">
+        <span id="cmTitle">TOTALLY_NORMAL_BUTTON.exe</span>
+        <div class="cm-meta mono-font">
+          <span id="cmStage">1/10</span>
+          <span id="cmClicks">0</span> wasted ·
+          <span id="cmTimer">0s</span>
+          <button class="cm-x" type="button" aria-label="close (or is it)">✕</button>
+        </div>
+      </div>
+      <div class="cm-body" id="cmBody">
+        <div id="cmIntro">
+          <p class="cm-say">A simple test of your patience. You will fail it emotionally.</p>
+          <button class="cm-btn" id="cmStart" type="button">BEGIN THE ORDEAL</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ ZONE 06 — SIMON LIES (hypno) ══════════════ -->
+  <section class="zone zone--hypno" id="simon" aria-label="Simon Lies game">
+    <span class="sticker" style="--r:-5deg; top:32px; left:6%;">MEMORY NOT FOUND</span>
+    <header class="zone__head">
+      <p class="zone__tag">ZONE 06 — GASLIGHT ORCHESTRA</p>
+      <h2 class="zone__title serif-font">Simon <em>lies.</em></h2>
+      <p class="zone__desc">Repeat the sequence. Seven rounds. Simon will accuse you of things you didn't do, sell ad space mid-sequence, and change the rules after the fact.</p>
+    </header>
+
+    <div class="simon__stage">
+      <div class="simon__hud mono-font">
+        <span>ROUND <b id="simonRound">–</b></span>
+      </div>
+      <div class="simon__board">
+        <button class="simon__pad simon__pad--0" type="button" aria-label="pad 1"></button>
+        <button class="simon__pad simon__pad--1" type="button" aria-label="pad 2"></button>
+        <button class="simon__pad simon__pad--2" type="button" aria-label="pad 3"></button>
+        <button class="simon__pad simon__pad--3" type="button" aria-label="pad 4"></button>
+      </div>
+      <p id="simonMsg" class="simon__msg">press start. trust nothing after that.</p>
+      <button class="btn-glitch" id="simonStart" type="button">START</button>
+    </div>
+  </section>
+
   <div class="ticker ticker--rev" aria-hidden="true"><div class="ticker__track">
-    <span>AURA IS NOT FINANCIAL ADVICE ✦ THE SHAPES ARE UNIONIZING ✦ 0 DAYS SINCE LAST L ✦ SKILL ISSUES DETECTED NEARBY ✦ CHAT IS ALWAYS WATCHING ✦&nbsp;</span>
+    <span>AURA IS NOT FINANCIAL ADVICE ✦ THE SHAPES ARE UNIONIZING ✦ 0 DAYS SINCE LAST L ✦ SKILL ISSUES DETECTED NEARBY ✦ CHAT IS ALWAYS WATCHING ✦ THE FLAG WAS NEVER REAL ✦&nbsp;</span>
   </div></div>
 
-  <!-- ══════════════ ZONE 04 — MIRROR.SYS (camera) ══════════════ -->
+  <!-- ══════════════ ZONE 07 — MIRROR.SYS (camera) ══════════════ -->
   <section class="zone zone--mirror" id="mirror" aria-label="Camera mirror">
     <span class="sticker" style="--r:7deg; top:32px; right:7%;">YOU LOOK GREAT</span>
     <header class="zone__head">
@@ -178,9 +264,13 @@
       </div>
       <div class="mirror__controls">
         <button id="mirrorFx" type="button" disabled>FX: THERMAL</button>
+        <label class="mirror__amt mono-font">CHAOS
+          <input type="range" id="mirrorAmt" min="1" max="10" value="4" />
+        </label>
         <div class="mirror__meter" title="Motion energy"><div id="mirrorMeterBar"></div></div>
         <button id="mirrorStop" type="button" disabled>SLEEP</button>
       </div>
+      <p class="mirror__quip serif-font" id="mirrorQuip">“the mirror will have opinions.”</p>
     </div>
   </section>
 
@@ -219,6 +309,25 @@ Rebooting playground in 3 seconds…</pre>
   </div>
   <div id="toast" aria-live="polite"></div>
   <div id="chatFeed" aria-hidden="true"></div>
+
+  <!-- gaslight layer -->
+  <div id="cookieBar" hidden>
+    <p id="cookieMsg"></p>
+    <div>
+      <button type="button">ACCEPT</button>
+      <button type="button">ACCEPT LOUDER</button>
+    </div>
+  </div>
+  <div id="surveyPop" hidden>
+    <p>Enjoying PLAYLAB?</p>
+    <div>
+      <button type="button">YES</button>
+      <button type="button">YES!!</button>
+    </div>
+  </div>
+  <div id="meltdown" hidden>
+    <p>BREATHE.</p>
+  </div>
   <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
   <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
@@ -231,7 +340,12 @@ Rebooting playground in 3 seconds…</pre>
   <script src="./js/dino.js"></script>
   <script src="./js/floor.js"></script>
   <script src="./js/survivor.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js" crossorigin="anonymous"></script>
+  <script src="./js/doodle.js"></script>
+  <script src="./js/clickme.js"></script>
+  <script src="./js/simon.js"></script>
   <script src="./js/camera.js"></script>
+  <script src="./js/gaslight.js"></script>
   <script src="./js/eggs.js"></script>
   <script src="./js/main.js"></script>
 </body>

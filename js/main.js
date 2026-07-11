@@ -11,11 +11,15 @@
     P.initDino();
     P.initFloor();
     P.initSurvivor();
+    P.initDoodle();
+    P.initClickme();
+    P.initSimon();
     P.initMirror();
+    P.initGaslight();
     P.initEggs();
 
     /* zone visibility — modules check P.vis[id] to pause their loops */
-    const watched = ['hero', 'dino', 'floor', 'survivor', 'mirror'];
+    const watched = ['hero', 'dino', 'floor', 'survivor', 'doodle', 'clickme', 'simon', 'mirror'];
     const io = new IntersectionObserver((entries) => {
       entries.forEach((en) => { P.vis[en.target.id] = en.isIntersecting; });
     }, { threshold: 0.05 });
@@ -72,6 +76,20 @@
     /* ── chaos ambience (skipped under reduced motion) ─────────────── */
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduced) {
+      /* hero letters yeet when clicked — they come back. changed. */
+      document.querySelectorAll('.hero__letter').forEach((L) => {
+        L.addEventListener('click', () => {
+          if (L.classList.contains('yeeted')) return;
+          L.style.setProperty('--yx', ((Math.random() - 0.5) * 500 | 0) + 'px');
+          L.classList.add('yeeted');
+          P.Sound?.zap();
+          setTimeout(() => {
+            L.classList.remove('yeeted');
+            P.toast?.('it needed a moment.');
+          }, 1600);
+        });
+      });
+
       /* hero title glitch seizure every 4–8s */
       const heroTitle = document.querySelector('.hero__title');
       (function glitchLoop() {
